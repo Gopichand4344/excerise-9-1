@@ -1,0 +1,43 @@
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+public class DatabaseConnector {
+
+    // 1. Define database configurations
+    // Syntax: jdbc:subprotocol://host:port/database_name
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/my_database";
+    private static final String DB_USER = "root";
+    private static final String DB_PASSWORD = "your_password";
+
+    public static void main(String[] args) {
+        // 2. Define the SQL query to execute
+        String sqlQuery = "SELECT id, name, email FROM users";
+
+        System.out.println("Connecting to the database...");
+
+        // 3. Establish the connection using try-with-resources for auto-closing
+        try (Connection connection = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sqlQuery)) {
+
+            System.out.println("Connection successful!\n");
+            System.out.println("--- User Records ---");
+
+            // 4. Iterate through the results
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                String email = resultSet.getString("email");
+
+                System.out.printf("ID: %d | Name: %s | Email: %s%n", id, name, email);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Database connection or query execution failed!");
+            e.printStackTrace();
+        }
+    }
+}
